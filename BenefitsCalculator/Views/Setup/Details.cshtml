@@ -1,0 +1,47 @@
+﻿@model BenefitsCalculator.Models.SetupDTO
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h3>Setup Details</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-floating mb-2">
+                    <input class="form-control" id="floatingInputGrid" value="@Model.GuaranteedIssue" readonly>
+                    <label for="floatingInputGrid">Guaranteed Issue</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input class="form-control" id="floatingInputGrid" value="@Model.MaxAgeLimit" readonly>
+                    <label for="floatingInputGrid">Max Age Limit</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input class="form-control" id="floatingInputGrid" value="@Model.MinAgeLimit" readonly>
+                    <label for="floatingInputGrid">Min Age Limit</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input class="form-control" id="floatingInputGrid" value="@Model.MaxRange" readonly>
+                    <label for="floatingInputGrid">Max Range</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input class="form-control" id="floatingInputGrid" value="@Model.MinRange" readonly>
+                    <label for="floatingInputGrid">Min Range</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input class="form-control" id="floatingInputGrid" value="@Model.Increments" readonly>
+                    <label for="floatingInputGrid">Increments</label>
+                </div>
+                <a asp-action="Edit" asp-route-id="@Model.Id">
+                    <input type="button" class="btn btn-warning mt-3 mb-3 me-1" value="Edit" />
+                </a>
+                <a href="javascript:void(0);" id="backLink">
+                    <input type="button" class="btn btn-primary mt-3 mb-3" value="Back" />
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

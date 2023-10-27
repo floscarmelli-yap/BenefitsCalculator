@@ -1,0 +1,81 @@
+﻿@model BenefitsCalculator.Models.ConsumerSetupDTO
+@{
+    ViewData["Title"] = "Computation Details";
+}
+
+<form asp-action="ComputationDetails">
+    <div class="col-md-6 offset-md-3">
+        <div class="card mb-2">
+            <div class="card-header">
+                <h5>Consumer</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 small">
+                    <div class="visually-hidden">
+                        <label class="form-label">Id: </label>
+                        <input asp-for="Consumer.Id" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Name: </label>
+                        <input asp-for="Consumer.Name" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Basic Salary: </label>
+                        <input asp-for="Consumer.BasicSalary" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Birth Date: </label>
+                        <input asp-for="Consumer.BirthDate" class="form-control" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Setup</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 small">
+                    <div class="visually-hidden">
+                        <label class="form-label">Id: </label>
+                        <input asp-for="Setup.Id" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Guaranteed Issue: </label>
+                        <input asp-for="Setup.GuaranteedIssue" class="form-control" readonly>
+                    </div>
+                    <span class="col-md-6"></span>
+                    <div class="col-md-6">
+                        <label class="form-label">Max Age Limit: </label>
+                        <input asp-for="Setup.MaxAgeLimit" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Min Age Limit: </label>
+                        <input asp-for="Setup.MinAgeLimit" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Max Range: </label>
+                        <input asp-for="Setup.MaxRange" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Min Range: </label>
+                        <input asp-for="Setup.MinRange" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Increments: </label>
+                        <input asp-for="Setup.Increments" class="form-control" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group mt-3">
+            <input type="submit" value="Compute" class="btn btn-success me-1" disabled="@((Model.Setup != null && Model.Setup.Id != 0) ? null : "disabled")" />
+            <a asp-action="ConsumerSelection">
+                <input type="button" class="btn btn-primary" value="Back" />
+            </a>
+        </div>
+    </div>
+</form>
+
+

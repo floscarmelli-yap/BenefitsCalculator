@@ -1,0 +1,54 @@
+﻿@model BenefitsCalculator.Models.ConsumerWithSetupListDTO
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h3>Edit Consumer</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group mb-1">
+                        <label asp-for="SetupId" class="control-label">Setup Id</label>
+                        <select class="form-select" asp-for="SetupId">
+                            <option selected></option>
+                            @foreach (var item in Model.SetupList)
+                            {
+                                <option value="@item.Id">@item.Id</option>
+                            }
+                        </select>
+                        @* <input asp-for="SetupId" class="form-control" /> *@
+                        <span asp-validation-for="SetupId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" readonly />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="BasicSalary" class="control-label">Basic Salary</label>
+                        <input asp-for="BasicSalary" class="form-control" />
+                        <span asp-validation-for="BasicSalary" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="BirthDate" class="control-label">Birth Date</label>
+                        <input asp-for="BirthDate" class="form-control" readonly />
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-success mt-3 me1" />
+                        <a asp-action="Index">
+                            <input type="button" class="btn btn-primary mt-3" value="Back" />
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

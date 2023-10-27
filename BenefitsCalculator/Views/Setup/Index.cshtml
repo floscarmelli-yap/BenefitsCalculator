@@ -1,0 +1,76 @@
+﻿@model IEnumerable<BenefitsCalculator.Models.SetupDTO>
+
+@{
+    ViewData["Title"] = "Setup";
+}
+
+<h2>Setup List</h2>
+
+<p>
+    <a asp-action="Create">
+        <input type = "button" class ="btn btn-success mt-3 mb-3" value="Create New"/>
+    </a>
+</p>
+<table class="table">
+    <thead class="table-dark">
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Guaranteed Issue
+            </th>
+            <th>
+                Max Age Limit
+            </th>
+            <th>
+                Min Age Limit
+            </th>
+            <th>
+                Max Range
+            </th>
+            <th>
+                Min Range
+            </th>
+            <th>
+                Increments
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GuaranteedIssue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxAgeLimit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinAgeLimit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxRange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinRange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Increments)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">
+                    <input type="button" class="btn btn-warning btn-sm me-sm-2" value="Edit" />
+                </a>
+                <a asp-action="Delete" asp-route-id="@item.Id">
+                    <input type="button" class="btn btn-danger btn-sm" value="Delete"/>
+                </a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

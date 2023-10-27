@@ -1,0 +1,85 @@
+﻿@model IEnumerable<BenefitsCalculator.Models.ConsumerDTO>
+
+@{
+    ViewData["Title"] = "Consumers";
+}
+
+@if (!ViewBag.ForSelection)
+{
+    <h2>Consumer List</h2>
+    <p>
+        <a asp-action="Create">
+            <input type="button" class="btn btn-success mt-3 mb-3" value="Create New" />
+        </a>
+    </p>
+}
+else
+{
+    <h2 class="mt-3 mb-3">Consumer Selection List</h2>
+}
+
+<table class="table">
+    <thead class="table-dark">
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Setup Id
+            </th>
+            <th>
+                Basic Salary
+            </th>
+            <th>
+                Birth Date
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SetupId)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BasicSalary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BirthDate)
+            </td>
+            <td>
+                <div class="container">
+                    @if (ViewBag.ForSelection)
+                    {
+                        <a asp-action="ComputationDetails" asp-controller="ComputeBenefits" asp-route-id="@item.Id">
+                            <input type="button" class="btn btn-success btn-sm me-sm-2" value="Select" />
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">
+                            <input type="button" class="btn btn-warning btn-sm me-sm-2" value="Edit" />
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">
+                            <input type="button" class="btn btn-danger btn-sm me-sm-2" value="Delete" />
+                        </a>
+                        <a asp-action="Index" asp-controller="BenefitsHistory" asp-route-id="@item.Id">
+                            <input type="button" class="btn btn-primary btn-sm me-sm-2" value="History" />
+                        </a>
+                        if (item.SetupId != null)
+                        {
+                            <a asp-action="Details" asp-controller="Setup" asp-route-id="@item.SetupId">
+                                <input type="button" class="btn btn-info btn-sm me-sm-2" value="Setup" />
+                            </a>
+                        }
+                    }
+                </div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

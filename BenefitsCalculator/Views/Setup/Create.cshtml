@@ -1,0 +1,57 @@
+﻿@model BenefitsCalculator.Models.SetupDTO
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h3>Create Setup</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group mb-1">
+                        <label asp-for="GuaranteedIssue" class="control-label">Guaranteed Issue</label>
+                        <input asp-for="GuaranteedIssue" class="form-control" />
+                        <span asp-validation-for="GuaranteedIssue" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="MaxAgeLimit" class="control-label">Max Age Limit</label>
+                        <input asp-for="MaxAgeLimit" class="form-control" />
+                        <span asp-validation-for="MaxAgeLimit" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="MinAgeLimit" class="control-label">Min Age Limit</label>
+                        <input asp-for="MinAgeLimit" class="form-control" />
+                        <span asp-validation-for="MinAgeLimit" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="MaxRange" class="control-label">Max Range</label>
+                        <input asp-for="MaxRange" class="form-control" />
+                        <span asp-validation-for="MaxRange" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="MinRange" class="control-label">Min Range</label>
+                        <input asp-for="MinRange" class="form-control" />
+                        <span asp-validation-for="MinRange" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label asp-for="Increments" class="control-label"></label>
+                        <input asp-for="Increments" class="form-control" />
+                        <span asp-validation-for="Increments" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-1">
+                        <input type="submit" value="Create" class="btn btn-success mt-3 me-1" />
+                        <a asp-action="Index">
+                            <input type="button" class="btn btn-primary mt-3" value="Back" />
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

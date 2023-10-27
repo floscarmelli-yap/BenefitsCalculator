@@ -1,0 +1,63 @@
+﻿@model IEnumerable<BenefitsCalculator.Models.HistGroupListDTO>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2 class="mt-3 mb-3">Consumer Benefits History</h2>
+
+<div class="row">
+    <div class="col-md-3 mt-3">
+        <label class="form-label">
+            <strong>Consumer:</strong>
+        </label>
+        <span class="form-control form-control-sm">
+            @Model.Select(x => x.ConsumerName).FirstOrDefault()
+        </span>
+    </div>
+</div>
+<div class="row">
+    <table class="table mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    Created Date
+                </th>
+                <th>
+                    Basic Salary
+                </th>
+                <th>
+                    Guaranteed Issue
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BasicSalary)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GuaranteedIssue)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">
+                            <input type="button" class="btn btn-info btn-sm me-sm-2" value="Details" />
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">
+                            <input type="button" class="btn btn-danger btn-sm me-sm-2" value="Delete" />
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="Index" asp-controller="Consumer">
+        <input type="button" class="btn btn-primary mt-2" value="Back" />
+    </a>
+</div>
