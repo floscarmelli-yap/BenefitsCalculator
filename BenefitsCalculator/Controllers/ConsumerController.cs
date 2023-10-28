@@ -49,13 +49,15 @@ namespace BenefitsCalculator.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var consumerWithSetupList = new ConsumerWithSetupListDTO();
+            var consumerWithSetupList = new ConsumerWithSetupIdsDTO();
 
             try
             {
-                // assign setup list to the create consumer view
+                // assign setup id array to the create consumer view
                 // this is for the setup id select option list
-                consumerWithSetupList.SetupList = _mapper.Map<List<SetupDTO>>(await _repository.GetAllSetup());
+                consumerWithSetupList.SetupIds = _mapper
+                    .Map<List<SetupDTO>>(await _repository.GetAllSetup())
+                    .Select(x => x.Id).ToArray();
             }
             catch (Exception ex)
             {
@@ -66,7 +68,7 @@ namespace BenefitsCalculator.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ConsumerDTO model)
+        public async Task<IActionResult> Create(ConsumerWithSetupIdsDTO model)
         {
             try
             {
@@ -74,7 +76,13 @@ namespace BenefitsCalculator.Controllers
                 if (ModelState.IsValid)
                 {
                     // convert consumer dto to consumer entity
-                    var newConsumer = _mapper.Map<Consumer>(model);
+                    var newConsumer = new Consumer
+                    {
+                        Name = model.Name,
+                        SetupId = model.SetupId,
+                        BasicSalary = model.BasicSalary,
+                        BirthDate = model.BirthDate,
+                    };
 
                     // add consumer and save all changes
                     _repository.AddEntity(newConsumer);
@@ -84,6 +92,13 @@ namespace BenefitsCalculator.Controllers
                         // redirect to consumer list view (index)
                         return RedirectToAction("Index");
                     }
+                }
+                else
+                {
+                    // return setup id array to the view for 
+                    // the selection option list
+                    model.SetupIds = _mapper.Map<List<SetupDTO>>(await _repository.GetAllSetup())
+                        .Select(x => x.Id).ToArray();
                 }
             }
             catch (Exception ex)
@@ -110,14 +125,14 @@ namespace BenefitsCalculator.Controllers
                 // if consumer is not null, show the edit view
                 if (consumer != null)
                 {
-                    return View(new ConsumerWithSetupListDTO
+                    return View(new ConsumerWithSetupIdsDTO
                     {
                         Id = consumer.Id,
                         SetupId = consumer.SetupId,
                         Name = consumer.Name,
                         BasicSalary = consumer.BasicSalary,
                         BirthDate = consumer.BirthDate,
-                        SetupList = _mapper.Map<List<SetupDTO>>(setup)
+                        SetupIds = _mapper.Map<List<SetupDTO>>(setup).Select(x => x.Id).ToArray()
                     });
                 }
             }
@@ -132,7 +147,7 @@ namespace BenefitsCalculator.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ConsumerDTO model) 
+        public async Task<IActionResult> Edit(ConsumerWithSetupIdsDTO model) 
         {
             try
             {
@@ -140,7 +155,14 @@ namespace BenefitsCalculator.Controllers
                 if (ModelState.IsValid)
                 {
                     // convert consumer dto to consumer entity
-                    var consumer = _mapper.Map<Consumer>(model);
+                    var consumer = new Consumer
+                    {
+                        Id = model.Id,
+                        Name = model.Name,
+                        SetupId = model.SetupId,
+                        BasicSalary = model.BasicSalary,
+                        BirthDate = model.BirthDate,
+                    };
 
                     // update entity if consumer exists
                     if (await _repository.ConsumerExists(consumer.Id))
@@ -158,6 +180,13 @@ namespace BenefitsCalculator.Controllers
                         // send an error message to the view
                         ModelState.AddModelError("", "Consumer data does not exist.");
                     }
+                }
+                else
+                {
+                    // return setup id array to the view for 
+                    // the selection option list
+                    model.SetupIds = _mapper.Map<List<SetupDTO>>(await _repository.GetAllSetup())
+                        .Select(x => x.Id).ToArray();
                 }
             }
             catch (Exception ex)

@@ -1,4 +1,4 @@
-﻿@model BenefitsCalculator.Models.ConsumerWithSetupListDTO
+﻿@model BenefitsCalculator.Models.ConsumerWithSetupIdsDTO
 
 @{
     ViewData["Title"] = "Edit";
@@ -17,9 +17,9 @@
                         <label asp-for="SetupId" class="control-label">Setup Id</label>
                         <select class="form-select" asp-for="SetupId">
                             <option selected></option>
-                            @foreach (var item in Model.SetupList)
+                            @foreach (var item in Model.SetupIds)
                             {
-                                <option value="@item.Id">@item.Id</option>
+                                <option value="@item">@item</option>
                             }
                         </select>
                         @* <input asp-for="SetupId" class="form-control" /> *@
@@ -32,7 +32,7 @@
                     </div>
                     <div class="form-group mb-1">
                         <label asp-for="BasicSalary" class="control-label">Basic Salary</label>
-                        <input asp-for="BasicSalary" class="form-control" />
+                        <input type="number" step="0.01" asp-for="BasicSalary" class="form-control" />
                         <span asp-validation-for="BasicSalary" class="text-danger"></span>
                     </div>
                     <div class="form-group mb-1">

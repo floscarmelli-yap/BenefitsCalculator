@@ -2,7 +2,7 @@
 
 namespace BenefitsCalculator.Models
 {
-    public class ConsumerWithSetupListDTO
+    public class ConsumerWithSetupIdsDTO
     {
         public int Id { get; set; }
 
@@ -21,6 +21,6 @@ namespace BenefitsCalculator.Models
         [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
 
-        public List<SetupDTO> SetupList { get; set; }
+        public int[] SetupIds { get; set; } = new int[0];
     }
 }

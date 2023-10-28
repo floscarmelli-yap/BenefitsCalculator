@@ -37,7 +37,7 @@ namespace BenefitsCalculator.Tests
         {
             // Arrange
             var controller = new ConsumerController(_mockRepository.Object, _mockLogger.Object, _mockMapper.Object);
-            var consumer = new ConsumerDTO();
+            var consumer = new ConsumerWithSetupIdsDTO();
             _mockRepository.Setup(x => x.SaveAll()).Returns(Task.FromResult(true));
 
             // Act
@@ -53,7 +53,7 @@ namespace BenefitsCalculator.Tests
         {
             // Arrange
             var controller = new ConsumerController(_mockRepository.Object, _mockLogger.Object, _mockMapper.Object);
-            var consumer = new ConsumerDTO();
+            var consumer = new ConsumerWithSetupIdsDTO();
 
             controller.ModelState.AddModelError("Name", "Required");
 
@@ -84,7 +84,7 @@ namespace BenefitsCalculator.Tests
         {
             // Arrange
             var controller = new ConsumerController(_mockRepository.Object, _mockLogger.Object, _mockMapper.Object);
-            var consumer = new ConsumerDTO();
+            var consumer = new ConsumerWithSetupIdsDTO();
 
             controller.ModelState.AddModelError("Name", "Required");
 
