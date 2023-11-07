@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using BenefitsCalculator.ComputationLogic;
-using BenefitsCalculator.Data;
 using BenefitsCalculator.Data.Entities;
+using BenefitsCalculator.Data.Repositories;
 using BenefitsCalculator.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Json;
 using System.Security.Claims;
 
 namespace BenefitsCalculator.Controllers
@@ -14,19 +15,13 @@ namespace BenefitsCalculator.Controllers
     public class ComputeBenefitsController : Controller
     {
         private readonly ILogger<ComputeBenefitsController> _logger;
-        private readonly IBenefitsRepository _repository;
-        private readonly IMapper _mapper;
-        private readonly UserManager<AppUser> _userManager;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public ComputeBenefitsController(IBenefitsRepository repository,
-            ILogger<ComputeBenefitsController> logger,
-            IMapper mapper,
-            UserManager<AppUser> userManager)
+        public ComputeBenefitsController(ILogger<ComputeBenefitsController> logger,
+            IHttpClientFactory clientFactory)
         {
-            _repository = repository;
             _logger = logger;
-            _mapper = mapper;
-            _userManager = userManager;
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -41,17 +36,19 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get consumer and setup data
-                var result = await _repository.GetConsumersIncludingSetupById(id);
+                // request to get consumer and setup data
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://localhost:7174/api/consumers/{id}/consumer-setup");
 
-                // assign result to a dto
-                var consumerSetupModel = new ConsumerSetupDTO
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                // if request status is success,
+                // send consumer and setup data to the view
+                if (response.IsSuccessStatusCode)
                 {
-                    Setup = _mapper.Map<SetupDTO>(result.Setup),
-                    Consumer = _mapper.Map<ConsumerDTO>(result)
-                };
-
-                return View(consumerSetupModel);
+                    return View(await response.Content.ReadFromJsonAsync<ConsumerSetupDTO>());
+                }
             }
             catch (Exception ex)
             {
@@ -71,33 +68,30 @@ namespace BenefitsCalculator.Controllers
             try
             {
                 // compute consumer benefits
-                var resultList = benefits.ComputeBenefits();
+                var result = benefits.ComputeBenefits();
 
                 // check if benefits list is not null and empty
-                if (resultList.BenefitsList != null && resultList.BenefitsList.Count > 0)
+                if (result.BenefitsList != null && result.BenefitsList.Count > 0)
                 {
-                    BenefitsHistGroup histGroup = new BenefitsHistGroup
+                    // assign value to created by
+                    if(User.Identity != null)
                     {
-                        ConsumerId = resultList.ConsumerId,
-                        CreatedDate = resultList.CreatedDate,
-                        GuaranteedIssue = resultList.GuaranteedIssue,
-                        BasicSalary = resultList.BasicSalary,
-                        BenefitsHistories = _mapper.Map<List<BenefitsHistory>>(resultList.BenefitsList)
-                    };
-
-                    // assign created by value if user is not null
-                    // note: saving will not fail even if createdby value is empty
-                    if (User.Identity != null && User.Identity.Name != null)
-                    {
-                        histGroup.CreatedBy = await _userManager.FindByNameAsync(User.Identity.Name);
+                        result.CreatedBy = User.Identity.Name;
                     }
 
-                    // save the computed benefits and redirect to the details page
-                    _repository.AddEntity(histGroup);
+                    // request to create new benefits data
+                    var request = new HttpRequestMessage(HttpMethod.Post, 
+                        "https://localhost:7174/api/benefits");
 
-                    if (await _repository.SaveAll())
+                    var client = _clientFactory.CreateClient();
+                    var response = await client.PostAsJsonAsync(request.RequestUri, result);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        return RedirectToAction("Details", "BenefitsHistory", new { id = histGroup.Id });
+                        var histGroupId = await response.Content.ReadAsStringAsync();
+
+                        // redirect to the details page
+                        return RedirectToAction("Details", "BenefitsHistory", new { id = int.Parse(histGroupId) });
                     }
                 }
             }

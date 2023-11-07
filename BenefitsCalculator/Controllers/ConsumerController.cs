@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
-using BenefitsCalculator.Data;
 using BenefitsCalculator.Data.Entities;
+using BenefitsCalculator.Data.Repositories;
 using BenefitsCalculator.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace BenefitsCalculator.Controllers
 {
@@ -11,32 +14,34 @@ namespace BenefitsCalculator.Controllers
     public class ConsumerController : Controller
     {
         private readonly ILogger<ConsumerController> _logger;
-        private readonly IBenefitsRepository _repository;
-        private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public ConsumerController(IBenefitsRepository repository,
-            ILogger<ConsumerController> logger,
-            IMapper mapper)
+        public ConsumerController(ILogger<ConsumerController> logger,
+            IHttpClientFactory clientFactory)
         {
-            _repository = repository;
             _logger = logger;
-            _mapper = mapper;
+            _clientFactory = clientFactory;
         }
 
         public async Task<IActionResult> Index(bool selection = false)
         {
-            List<ConsumerDTO> consumerlist = new List<ConsumerDTO>();
-
             try
             {
-                // get all consumer data
-                consumerlist = _mapper.Map<List<ConsumerDTO>>
-                    (await _repository.GetAllConsumers());
-
                 // to identify if consumer list view is for selection view
                 ViewBag.ForSelection = selection;
 
-                return View(consumerlist);
+                // request to get all consumers
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    "https://localhost:7174/api/consumers");
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // return consumer list to the view
+                    return View(await response.Content.ReadFromJsonAsync<IEnumerable<ConsumerDTO>>());
+                }
             }
             catch (Exception ex)
             {
@@ -49,22 +54,11 @@ namespace BenefitsCalculator.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var consumerWithSetupList = new ConsumerWithSetupIdsDTO();
-
-            try
+            // return to view with a list of setup ids for selection
+            return View(new ConsumerWithSetupIdsDTO
             {
-                // assign setup id array to the create consumer view
-                // this is for the setup id select option list
-                consumerWithSetupList.SetupIds = _mapper
-                    .Map<List<SetupDTO>>(await _repository.GetAllSetup())
-                    .Select(x => x.Id).ToArray();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Consumer - Error while processing the request.");
-            }
-
-            return View(consumerWithSetupList);
+                SetupIds = await GetSetupIds()
+            }) ;
         }
 
         [HttpPost]
@@ -75,8 +69,8 @@ namespace BenefitsCalculator.Controllers
                 // check the model state
                 if (ModelState.IsValid)
                 {
-                    // convert consumer dto to consumer entity
-                    var newConsumer = new Consumer
+                    // convert to consumer dto
+                    var newConsumer = new ConsumerDTO
                     {
                         Name = model.Name,
                         SetupId = model.SetupId,
@@ -84,10 +78,14 @@ namespace BenefitsCalculator.Controllers
                         BirthDate = model.BirthDate,
                     };
 
-                    // add consumer and save all changes
-                    _repository.AddEntity(newConsumer);
+                    // request to create new consumer
+                    var request = new HttpRequestMessage(HttpMethod.Post,
+                        "https://localhost:7174/api/consumers");
 
-                    if (await _repository.SaveAll())
+                    var client = _clientFactory.CreateClient();
+                    var response = await client.PostAsJsonAsync<ConsumerDTO>(request.RequestUri, newConsumer);
+
+                    if (response.IsSuccessStatusCode)
                     {
                         // redirect to consumer list view (index)
                         return RedirectToAction("Index");
@@ -97,13 +95,12 @@ namespace BenefitsCalculator.Controllers
                 {
                     // return setup id array to the view for 
                     // the selection option list
-                    model.SetupIds = _mapper.Map<List<SetupDTO>>(await _repository.GetAllSetup())
-                        .Select(x => x.Id).ToArray();
+                    model.SetupIds = await GetSetupIds();
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Consumer - Error while processing the request.");
+                _logger.LogError(ex, "Consumer Create - Error while processing the request.");
             }
 
             // send an error message to the view
@@ -116,15 +113,20 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get consumer data by id
-                var consumer = await _repository.GetConsumerById(id);
+                // request to get consumer data by id
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://localhost:7174/api/consumers/{id}");
 
-                // get setup list
-                var setup = await _repository.GetAllSetup();
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
 
-                // if consumer is not null, show the edit view
-                if (consumer != null)
+                // if response status is success,
+                // show the edit view
+                if (response.IsSuccessStatusCode)
                 {
+                    var consumer = await response.Content.ReadFromJsonAsync<ConsumerDTO>();
+                    consumer ??= new ConsumerDTO();
+
                     return View(new ConsumerWithSetupIdsDTO
                     {
                         Id = consumer.Id,
@@ -132,16 +134,16 @@ namespace BenefitsCalculator.Controllers
                         Name = consumer.Name,
                         BasicSalary = consumer.BasicSalary,
                         BirthDate = consumer.BirthDate,
-                        SetupIds = _mapper.Map<List<SetupDTO>>(setup).Select(x => x.Id).ToArray()
+                        SetupIds = await GetSetupIds(),
                     });
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Consumer - Error while processing the request.");
+                _logger.LogError(ex, "Consumer Edit - Error while processing the request.");
             }
 
-            // redirect to the error page if consumer data is null
+            // redirect to the error page if reponse status is not success
             // or if an exception occurred
             return RedirectToAction("Error", "App");
         }
@@ -154,8 +156,8 @@ namespace BenefitsCalculator.Controllers
                 // check the model state
                 if (ModelState.IsValid)
                 {
-                    // convert consumer dto to consumer entity
-                    var consumer = new Consumer
+                    // convert to consumer dto
+                    var consumer = new ConsumerDTO
                     {
                         Id = model.Id,
                         Name = model.Name,
@@ -164,35 +166,33 @@ namespace BenefitsCalculator.Controllers
                         BirthDate = model.BirthDate,
                     };
 
-                    // update entity if consumer exists
-                    if (await _repository.ConsumerExists(consumer.Id))
-                    {
-                        _repository.UpdateEntity(consumer);
+                    // request to edit consumer data
+                    var request = new HttpRequestMessage(HttpMethod.Put,
+                        "https://localhost:7174/api/consumers");
 
-                        if (await _repository.SaveAll())
-                        {
-                            // redirect to consumer list view (index)
-                            return RedirectToAction("Index");
-                        }
-                    }
-                    else
+                    var client = _clientFactory.CreateClient();
+                    var response = await client.PutAsJsonAsync<ConsumerDTO>(request.RequestUri, consumer);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        // send an error message to the view
+                        // redirect to consumer list view (index)
+                        return RedirectToAction("Index");
+                    }
+                    else if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        // send an error message to the view if consumer is not found
                         ModelState.AddModelError("", "Consumer data does not exist.");
                     }
-                }
-                else
-                {
-                    // return setup id array to the view for 
-                    // the selection option list
-                    model.SetupIds = _mapper.Map<List<SetupDTO>>(await _repository.GetAllSetup())
-                        .Select(x => x.Id).ToArray();
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Consumer - Error while processing the request.");
+                _logger.LogError(ex, "Consumer Edit - Error while processing the request.");
             }
+
+            // return setup id array to the view for 
+            // the selection option list
+            model.SetupIds = await GetSetupIds();
 
             // send an error message to the view
             ModelState.AddModelError("", "Failed to save.");
@@ -214,30 +214,61 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get consumer data for delete
-                var consumer = await _repository.GetConsumerById(id);
+                // request to get consumer data for delete
+                var request = new HttpRequestMessage(HttpMethod.Delete,
+                    $"https://localhost:7174/api/consumers/{id}");
 
-                // check if consumer is not null
-                if (consumer != null)
+                var client = _clientFactory.CreateClient();
+                var response = await client.DeleteAsync(request.RequestUri);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    // delete consumer and if successful,
                     // redirect to the consumer list (index) view
-                    _repository.DeleteConsumer(consumer);
-
-                    if (await _repository.SaveAll())
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
+                    return RedirectToAction(nameof(Index));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Consumer - Error while processing the request.");
+                _logger.LogError(ex, "Consumer Delete - Error while processing the request.");
             }
 
             // redirect to the error page if consumer delete fails
             // or if an exception occurred
             return RedirectToAction("Error", "App");
+        }
+
+        private async Task<int[]> GetSetupIds()
+        {
+            var setupIds = new int[0];
+
+            try
+            {
+                // request to get all setups
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    "https://localhost:7174/api/setups");
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var setupList = await response.Content.
+                        ReadFromJsonAsync<IList<SetupDTO>>();
+
+                    if (setupList != null)
+                    {
+                        // assign setup id array to the create consumer view
+                        // this is for the setup id select option list
+                        setupIds = setupList.Select(x => x.Id).ToArray();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Consumer GetSetupIds - Error while processing the request.");
+            }
+            
+            return setupIds;
         }
     }
 }

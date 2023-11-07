@@ -19,6 +19,12 @@ namespace BenefitsCalculator.Data
                 .ForMember(dest => dest.BenefitsStatus,
                            opt => opt.MapFrom(src => (int)src.BenefitsStatus))
                 .ReverseMap();
+
+            CreateMap<HistGroupDTO, BenefitsHistGroup>()
+                .ForMember(dest => dest.CreatedBy,
+                           opt => opt.Ignore())
+                .ForMember(dest => dest.BenefitsHistories,
+                           opt => opt.MapFrom(src => src.BenefitsList));
         }
     }
 }

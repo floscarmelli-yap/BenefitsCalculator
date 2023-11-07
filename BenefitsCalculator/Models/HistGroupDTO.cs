@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BenefitsCalculator.Data.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace BenefitsCalculator.Models
 {
     public class HistGroupDTO
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
 
         public int ConsumerId { get; set; }
+
+        public string? CreatedBy {get;set;}
 
         public DateTime CreatedDate { get; set; }
 

@@ -1,0 +1,392 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BenefitsCalculator</name>
+    </assembly>
+    <members>
+        <member name="M:BenefitsCalculator.API.BenefitsHistoryApi.Delete(System.Int32)">
+            api/benefits/histories/id
+        </member>
+        <member name="M:BenefitsCalculator.API.SetupApi.#ctor(BenefitsCalculator.Data.Repositories.ISetupRepository,BenefitsCalculator.Data.Repositories.ICommonRepository,Microsoft.Extensions.Logging.ILogger{BenefitsCalculator.API.SetupApi},AutoMapper.IMapper)">
+            <summary>
+            Setup Service Constructor
+            </summary>
+            <param name="setupRepository"></param>
+            <param name="mapper"></param>
+        </member>
+        <member name="M:BenefitsCalculator.ComputationLogic.BenefitsComputation.ComputeBenefits">
+            <summary>
+            Computes the benefits of consumer using its setup
+            </summary>
+            <returns>Benefits History Group data</returns>
+        </member>
+        <member name="M:BenefitsCalculator.ComputationLogic.BenefitsComputation.GetAge(System.DateTime)">
+            <summary>
+            Computes Age using Birth Date
+            </summary>
+            <param name="birthDate"></param>
+            <returns>Age</returns>
+        </member>
+        <member name="M:BenefitsCalculator.ComputationLogic.BenefitsComputation.IsAgeWithinRange(System.Int32)">
+            <summary>
+            Checks if age is within the minimum and maximum age limit.
+            </summary>
+            <param name="age"></param>
+            <returns>true if within limit, else false</returns>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.AppUser.FirstName">
+            <summary>
+            First Name
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.AppUser.LastName">
+            <summary>
+            Last Name
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistGroup.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistGroup.Consumer">
+            <summary>
+            Consumer
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistGroup.CreatedDate">
+            <summary>
+            Date Created
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistGroup.CreatedBy">
+            <summary>
+            Created By
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistGroup.GuaranteedIssue">
+            <summary>
+            Guaranteed Issue
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistGroup.BasicSalary">
+            <summary>
+            Basic Salary
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistGroup.BenefitsHistories">
+            <summary>
+            List of Benefits Histories
+            </summary>
+        </member>
+        <member name="T:BenefitsCalculator.Data.Entities.Status">
+            <summary>
+            Status Types:
+            Approved = 1
+            For Approval = 2
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistory.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistory.Multiple">
+            <summary>
+            Multiple
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistory.AmountQuotation">
+            <summary>
+            Benefits Amount Quotation
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistory.PendedAmount">
+            <summary>
+            Pending Amount For Approval
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistory.BenefitsStatus">
+            <summary>
+            Benefits Status
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.BenefitsHistory.BenefitsHistGroup">
+            <summary>
+            Benefits History Group
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Consumer.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Consumer.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Consumer.BasicSalary">
+            <summary>
+            Basic Salary
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Consumer.BirthDate">
+            <summary>
+            Birth Date
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Consumer.Setup">
+            <summary>
+            Setup
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Consumer.BenefitsHistGroups">
+            <summary>
+            Benefits History Groups List
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Setup.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Setup.GuaranteedIssue">
+            <summary>
+            Guaranteed Issue
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Setup.MaxAgeLimit">
+            <summary>
+            Max Age Limit
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Setup.MinAgeLimit">
+            <summary>
+            Min Age Limit
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Setup.MinRange">
+            <summary>
+            Min Range
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Setup.MaxRange">
+            <summary>
+            Max Range
+            </summary>
+        </member>
+        <member name="P:BenefitsCalculator.Data.Entities.Setup.Increments">
+            <summary>
+            Increments
+            </summary>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.BenefitsHistoryRepository.#ctor(BenefitsCalculator.Data.BenefitsContext)">
+            <summary>
+            Benefits History Repository Constructor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.BenefitsHistoryRepository.DeleteHistory(BenefitsCalculator.Data.Entities.BenefitsHistGroup)">
+            <summary>
+            Deletes Benefits History Group data.
+            </summary>
+            <param name="historyGroup"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.BenefitsHistoryRepository.GetAllBenefitsHistGroups">
+            <summary>
+            Gets all Benefits History Group data.
+            </summary>
+            <returns>List of BenefitsHistGroup</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.BenefitsHistoryRepository.GetBenefitsHistGroupById(System.Int32)">
+            <summary>
+            Gets BenefitsHistGroup data by id.
+            Includes Benefits History and Consumer data
+            </summary>
+            <param name="id"></param>
+            <returns>BenefitsHistGroup data</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.BenefitsHistoryRepository.GetBenefitsHistGroupForDelete(System.Int32)">
+            <summary>
+            Gets Benefits History Group including its related data for delete.
+            </summary>
+            <param name="id"></param>
+            <returns>BenefitsHistGroup data.</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.BenefitsHistoryRepository.GetConsumerBenefitsHistGroups(System.Int32)">
+            <summary>
+            Gets all Consumer BenefitsHistGroup data.
+            </summary>
+            <returns>list of BenefitsHistGroup</returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.CommonRepository.#ctor(BenefitsCalculator.Data.BenefitsContext)">
+            <summary>
+            Common Repository Constructor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.CommonRepository.AddEntity(System.Object)">
+            <summary>
+            Creates new entity data.
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.CommonRepository.SaveAll">
+            <summary>
+            Saves entity changes.
+            </summary>
+            <returns>true if saving is successful, else false</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.CommonRepository.UpdateEntity(System.Object)">
+            <summary>
+            Updates entity data.
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.ConsumerRepository.#ctor(BenefitsCalculator.Data.BenefitsContext)">
+            <summary>
+            Consumer Repository Constructor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.ConsumerRepository.ConsumerExists(System.Int32)">
+            <summary>
+            Checks if Consumer data exists.
+            </summary>
+            <param name="id"></param>
+            <returns>true if exists, else false</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.ConsumerRepository.DeleteConsumer(BenefitsCalculator.Data.Entities.Consumer)">
+            <summary>
+            Deletes Consumer data.
+            </summary>
+            <param name="consumer"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.ConsumerRepository.GetAllConsumers">
+            <summary>
+            Gets all Consumer data.
+            </summary>
+            <returns>list of Consumers</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.ConsumerRepository.GetConsumerById(System.Int32)">
+            <summary>
+            Gets Consumer data by Id.
+            </summary>
+            <param name="id"></param>
+            <returns>Consumer data or null</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.ConsumerRepository.GetConsumersIncludingSetupById(System.Int32)">
+            <summary>
+            Gets a Consumer and its Setup data by id.
+            </summary>
+            <param name="id"></param>
+            <returns>Consumer data</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.SetupRepository.#ctor(BenefitsCalculator.Data.BenefitsContext)">
+            <summary>
+            Setup Repository Constructor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.SetupRepository.DeleteSetup(BenefitsCalculator.Data.Entities.Setup)">
+            <summary>
+            Deletes Setup data.
+            </summary>
+            <param name="setup"></param>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.SetupRepository.GetAllSetup">
+            <summary>
+            Gets all Setup data.
+            </summary>
+            <returns>list of Setups</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.SetupRepository.GetSetupById(System.Int32)">
+            <summary>
+            Gets Setup data by Id.
+            </summary>
+            <param name="id"></param>
+            <returns>Setup data or null</returns>
+        </member>
+        <member name="M:BenefitsCalculator.Data.Repositories.SetupRepository.SetupExists(System.Int32)">
+            <summary>
+            Checks if Setup data exists.
+            </summary>
+            <param name="id"></param>
+            <returns>true if exists, else false</returns>
+        </member>
+        <member name="T:BenefitsCalculator.Migrations.InitialDb">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.InitialDb.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.InitialDb.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.InitialDb.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BenefitsCalculator.Migrations.RemoveCol">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.RemoveCol.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.RemoveCol.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.RemoveCol.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BenefitsCalculator.Migrations.AddedBenefitsGroupIdProp">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.AddedBenefitsGroupIdProp.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.AddedBenefitsGroupIdProp.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.AddedBenefitsGroupIdProp.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BenefitsCalculator.Migrations.DBStructureUpdate">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.DBStructureUpdate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.DBStructureUpdate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.DBStructureUpdate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BenefitsCalculator.Migrations.Identity">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.Identity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.Identity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.Identity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BenefitsCalculator.Migrations.IdentitySeedData">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.IdentitySeedData.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.IdentitySeedData.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BenefitsCalculator.Migrations.IdentitySeedData.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace BenefitsCalculator.Tests
+namespace BenefitsCalculator.Tests.Controller
 {
     public class AccountTests
     {

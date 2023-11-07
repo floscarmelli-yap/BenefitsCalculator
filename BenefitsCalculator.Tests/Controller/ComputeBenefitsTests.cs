@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BenefitsCalculator.ComputationLogic;
 using BenefitsCalculator.Controllers;
-using BenefitsCalculator.Data;
 using BenefitsCalculator.Data.Entities;
+using BenefitsCalculator.Data.Repositories;
 using BenefitsCalculator.Migrations;
 using BenefitsCalculator.Models;
 using Microsoft.AspNetCore.Identity;
@@ -11,31 +11,25 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace BenefitsCalculator.Tests
+namespace BenefitsCalculator.Tests.Controller
 {
     public class ComputeBenefitsTests
     {
         private Mock<ILogger<ComputeBenefitsController>> _mockLogger;
-        private Mock<IBenefitsRepository> _mockRepository;
-        private Mock<IMapper> _mockMapper;
-        private Mock<UserManager<AppUser>> _mockUserManager;
+        private Mock<IHttpClientFactory> _mockClientFactory;
 
         public ComputeBenefitsTests()
         {
             _mockLogger = new Mock<ILogger<ComputeBenefitsController>>();
-            _mockRepository = new Mock<IBenefitsRepository>();
-            _mockMapper = new Mock<IMapper>();
-            _mockUserManager = new Mock<UserManager<AppUser>>(
-                Mock.Of<IUserStore<AppUser>>(),
-                null, null, null, null, null, null, null, null);
+            _mockClientFactory = new Mock<IHttpClientFactory>();
         }
 
         [Fact]
         public void ComputationDetails_RedirectsToError_WhenComputationFails()
         {
             // Arrange
-            var controller = new ComputeBenefitsController(_mockRepository.Object, _mockLogger.Object, 
-                _mockMapper.Object, _mockUserManager.Object);
+            var controller = new ComputeBenefitsController(_mockLogger.Object,
+                _mockClientFactory.Object);
 
             // Act
 

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using BenefitsCalculator.Data;
 using BenefitsCalculator.Data.Entities;
+using BenefitsCalculator.Data.Repositories;
 using BenefitsCalculator.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace BenefitsCalculator.Controllers
 {
@@ -13,33 +13,35 @@ namespace BenefitsCalculator.Controllers
     public class SetupController : Controller
     {
         private readonly ILogger<SetupController> _logger;
-        private readonly IBenefitsRepository _repository;
-        private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public SetupController(IBenefitsRepository repository, 
-            ILogger<SetupController> logger,
-            IMapper mapper)
+        public SetupController(ILogger<SetupController> logger,
+            IHttpClientFactory clientFactory)
         {
-            _repository = repository;
             _logger = logger;
-            _mapper = mapper;
+            _clientFactory = clientFactory;
         }
 
         public async Task<IActionResult> Index()
         {
-            List<SetupDTO> setupList = new List<SetupDTO>();
-
             try
             {
-                // get all setup data and send the list to the view
-                setupList = _mapper.Map<List<SetupDTO>>
-                    (await _repository.GetAllSetup());
+                // request to get all setups
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    "https://localhost:7174/api/setups");
 
-                return View(setupList);
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if(response.IsSuccessStatusCode)
+                {
+                    // return setup list to the view
+                    return View(await response.Content.ReadFromJsonAsync<IList<SetupDTO>>());
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Setup - Error while processing the request.");
+                _logger.LogError(ex, "Setup Controller - Error while processing the request.");
             }
 
             // redirect to the error page if an exception occurred
@@ -71,12 +73,14 @@ namespace BenefitsCalculator.Controllers
                 // check the model state
                 if (ModelState.IsValid)
                 {
-                    var newSetup = _mapper.Map<Setup>(model);
+                    // request to create new setup
+                    var request = new HttpRequestMessage(HttpMethod.Post,
+                        "https://localhost:7174/api/setups");
 
-                    // add new setup data
-                    _repository.AddEntity(newSetup);
+                    var client = _clientFactory.CreateClient();
+                    var response = await client.PostAsJsonAsync<SetupDTO>(request.RequestUri, model);
 
-                    if (await _repository.SaveAll())
+                    if (response.IsSuccessStatusCode)
                     {
                         // redirect to setup list view (index)
                         return RedirectToAction("Index");
@@ -98,19 +102,23 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get setup data by id
-                var setup = await _repository.GetSetupById(id);
+                // request to get setup data by id
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://localhost:7174/api/setups/{id}");
 
-                // if setup data is not null,
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                // if request status is successful,
                 // send setup data to the details view
-                if (setup != null)
+                if (response.IsSuccessStatusCode)
                 {
-                    return View(_mapper.Map<SetupDTO>(setup));
+                    return View(await response.Content.ReadFromJsonAsync<SetupDTO>());
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Setup - Error while processing the request.");
+                _logger.LogError(ex, "Setup Controller - Error while processing the request.");
             }
 
             // redirect to the error page if setup data is not found
@@ -122,22 +130,26 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get setup data by id
-                var setup = await _repository.GetSetupById(id);
+                // request to get setup data by id
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://localhost:7174/api/setups/{id}");
 
-                // if setup data is not null,
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                // if request status is successful,
                 // send setup data to the edit view
-                if (setup != null)
+                if (response.IsSuccessStatusCode)
                 {
-                    return View(_mapper.Map<SetupDTO>(setup));
+                    return View(await response.Content.ReadFromJsonAsync<SetupDTO>());
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Setup - Error while processing the request.");
+                _logger.LogError(ex, "Setup Controller - Error while processing the request.");
             }
 
-            // redirect to the error page if setup data is not found
+            // redirect to the error page if request is unsuccessful
             // or if an exception occurred
             return RedirectToAction("Error", "App");
         }
@@ -162,22 +174,21 @@ namespace BenefitsCalculator.Controllers
                 // check the model state
                 if (ModelState.IsValid)
                 {
-                    var setup = _mapper.Map<Setup>(model);
+                    // request to edit setup data
+                    var request = new HttpRequestMessage(HttpMethod.Put,
+                        "https://localhost:7174/api/setups");
 
-                    // update entity if setup exists
-                    if (await _repository.SetupExists(setup.Id))
+                    var client = _clientFactory.CreateClient();
+                    var response = await client.PutAsJsonAsync<SetupDTO>(request.RequestUri, model);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        _repository.UpdateEntity(setup);
-
-                        if (await _repository.SaveAll())
-                        {
-                            // redirect to setup list view (index)
-                            return RedirectToAction("Index");
-                        }
+                        // redirect to setup list view (index)
+                        return RedirectToAction("Index");
                     }
-                    else
+                    else if(response.StatusCode == HttpStatusCode.NotFound)
                     {
-                        // send an error message to the view
+                        // send an error message to the view if setup is not found
                         ModelState.AddModelError("", "Setup data does not exist.");
                     }
                 }
@@ -205,19 +216,18 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get setup data by id
-                var setup = await _repository.GetSetupById(id);
+                // request to delete setup data
+                var request = new HttpRequestMessage(HttpMethod.Delete,
+                    $"https://localhost:7174/api/setups/{id}");
 
-                if (setup != null)
+                var client = _clientFactory.CreateClient();
+                var response = await client.DeleteAsync(request.RequestUri);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    // delete setup and if successful,
+                    // on a successful delete,
                     // redirect to setup list view (index)
-                    _repository.DeleteSetup(setup);
-
-                    if (await _repository.SaveAll())
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
+                    return RedirectToAction(nameof(Index));
                 }
             }
             catch (Exception ex)

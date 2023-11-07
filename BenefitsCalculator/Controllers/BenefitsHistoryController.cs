@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BenefitsCalculator.Data;
 using BenefitsCalculator.Models;
 using AutoMapper;
 using BenefitsCalculator.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using BenefitsCalculator.Data.Repositories;
 
 namespace BenefitsCalculator.Controllers
 {
@@ -18,38 +18,31 @@ namespace BenefitsCalculator.Controllers
     public class BenefitsHistoryController : Controller
     {
         private readonly ILogger<BenefitsHistoryController> _logger;
-        private readonly IBenefitsRepository _repository;
-        private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public BenefitsHistoryController(IBenefitsRepository repository,
-            ILogger<BenefitsHistoryController> logger,
-            IMapper mapper)
+        public BenefitsHistoryController(ILogger<BenefitsHistoryController> logger,
+            IHttpClientFactory clientFactory)
         {
-            _repository = repository;
             _logger = logger;
-            _mapper = mapper;
+            _clientFactory = clientFactory;
         }
 
         public async Task<IActionResult> Index(int id)
         {
             try
             {
-                // get benefits history group data of consumer
-                var result = await _repository.GetConsumerBenefitsHistGroups(id);
+                // request to get benefits history group data of consumer
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://localhost:7174/api/benefits/consumer_histories/{id}");
 
-                // assign result to a dto
-                var histGroupList = result.Select(x => new HistGroupListDTO
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Id = x.Id,
-                    BasicSalary = x.BasicSalary,
-                    ConsumerId = x.ConsumerId,
-                    ConsumerName = x.Consumer.Name,
-                    GuaranteedIssue = x.GuaranteedIssue,
-                    CreatedDate = x.CreatedDate
-                }).ToList();
-
-                // return data to the view
-                return View(histGroupList);
+                    // return data to the view
+                    return View(await response.Content.ReadFromJsonAsync<IEnumerable<HistGroupListDTO>>());
+                }
             }
             catch (Exception ex)
             {
@@ -64,20 +57,18 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get all benefits history group data
-                var result = await _repository.GetAllBenefitsHistGroups();
+                // request to get all benefits history group data
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    "https://localhost:7174/api/benefits/histories");
 
-                // assign data to a dto
-                var histGroupList = result.Select(x => new HistGroupListDTO
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Id = x.Id,
-                    BasicSalary = x.BasicSalary,
-                    ConsumerName = x.Consumer.Name,
-                    GuaranteedIssue = x.GuaranteedIssue,
-                    CreatedDate = x.CreatedDate
-                }).ToList();
-
-                return View(histGroupList);
+                    // return data to the view
+                    return View(await response.Content.ReadFromJsonAsync<IEnumerable<HistGroupListDTO>>());
+                }
             }
             catch (Exception ex)
             {
@@ -92,22 +83,19 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get benefits history and its associated
+                // request to get benefits history and its associated
                 // groupings and consumer data
-                var result = await _repository.GetBenefitsHistGroupById(id);
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://localhost:7174/api/benefits/histories/{id}");
 
-                // assign data to a dto
-                var historyGroup = new HistGroupDetailsDTO
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Id = result.Id,
-                    ConsumerId = result.ConsumerId,
-                    BasicSalary = result.BasicSalary,
-                    ConsumerName = result.Consumer.Name,
-                    GuaranteedIssue = result.GuaranteedIssue,
-                    BenefitsHistories = _mapper.Map<List<BenefitsHistDTO>>(result.BenefitsHistories)
-                };
-
-                return View(historyGroup);
+                    // return data to the view
+                    return View(await response.Content.ReadFromJsonAsync<HistGroupDetailsDTO>());
+                }
             }
             catch (Exception ex)
             {
@@ -132,20 +120,19 @@ namespace BenefitsCalculator.Controllers
         {
             try
             {
-                // get benefits history and its associated groupings for deletion
-                var histGroup = await _repository.GetBenefitsHistGroupForDelete(id);
+                // request to get benefits history and its associated groupings for deletion
+                var request = new HttpRequestMessage(HttpMethod.Delete,
+                    $"https://localhost:7174/api/benefits/histories/{id}");
 
-                if (histGroup != null)
+                var client = _clientFactory.CreateClient();
+                var response = await client.DeleteAsync(request.RequestUri);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    // delete histories and its groupings and
-                    // redirect to the benefits history list page
-                    _repository.DeleteHistory(histGroup);
+                    var consumerId = await response.Content.ReadAsStringAsync();
 
-                    // if save is successful, redirect to the list (index) of consumer benefits history 
-                    if (await _repository.SaveAll())
-                    {
-                        return RedirectToAction("Index", new { id = histGroup.ConsumerId});
-                    }
+                    // redirect to the list (index) of consumer benefits history
+                    return RedirectToAction("Index", new { id = int.Parse(consumerId) });
                 }
             }
             catch (Exception ex)
